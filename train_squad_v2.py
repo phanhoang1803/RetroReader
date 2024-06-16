@@ -123,7 +123,7 @@ def main(args):
         config_file=args.configs,
     )
     # Train
-    retro_reader.train()
+    retro_reader.train(module=args.module)
     logger.warning("Train retrospective reader Done.")
     
     
