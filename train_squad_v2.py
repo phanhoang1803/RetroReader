@@ -18,7 +18,7 @@ require_version("datasets>=1.8.0")
 logger = logging.get_logger(__name__)
 
 
-def schema_integrate(example: Batch) -> Union[Dict, Any]:
+def schema_integrate(example) -> Union[Dict, Any]:
     title = example["title"]
     question = example["question"]
     context = example["context"]
@@ -48,7 +48,7 @@ def schema_integrate(example: Batch) -> Union[Dict, Any]:
 
 
 # data augmentation for multiple answers
-def data_aug_for_multiple_answers(example: Batch) -> Union[Dict, Any]:
+def data_aug_for_multiple_answers(examples) -> Union[Dict, Any]:
     result = {key: [] for key in examples.keys()}
     
     def update(i, answers=None):
@@ -105,7 +105,7 @@ def main(args):
     squad_v2_train = squad_v2["train"].map(
         data_aug_for_multiple_answers,
         batched=True,
-        batch_size=1000,
+        batch_size=args.batch_size,
         num_proc=5,
     )
     squad_v2 = datasets.DatasetDict({
@@ -130,5 +130,7 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--configs", "-c", type=str, default="configs/train_en_electra_large.yaml", help="config file path")
+    parser.add_argument("--module", "-m", type=str, default="all", help="module to train")
+    parser.add_argument("--batch_size", "-b", type=int, default=16, help="batch size")
     args = parser.parse_args()
     main(args)
